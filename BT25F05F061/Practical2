@@ -1,0 +1,116 @@
+#include <iostream>
+using namespace std;
+
+class CircularQueue {
+private:
+    int* arr;
+    int front;
+    int rear;
+    int size;
+
+public:
+    // Initialize the queue with a fixed size
+    CircularQueue(int s) {
+        size = s;
+        arr = new int[size];
+        front = -1;
+        rear = -1;
+    }
+
+    // Destructor to free allocated memory
+    ~CircularQueue() {
+        delete[] arr;
+    }
+
+    // Check if the queue is full
+    bool isFull() {
+        return ((rear + 1) % size == front);
+    }
+
+    // Check if the queue is empty
+    bool isEmpty() {
+        return (front == -1);
+    }
+
+    // Insert an element into the queue
+    void enqueue(int value) {
+        if (isFull()) {
+            cout << "Queue Overflow! Cannot insert " << value << endl;
+            return;
+        }
+        
+        // If inserting the very first element
+        if (isEmpty()) {
+            front = 0;
+        }
+
+        // Circularly increment the rear pointer
+        rear = (rear + 1) % size;
+        arr[rear] = value;
+        cout << "Inserted: " << value << endl;
+    }
+
+    // Remove an element from the front of the queue
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Queue Underflow! Nothing to remove." << endl;
+            return -1;
+        }
+
+        int removedValue = arr[front];
+
+        // If the queue has only one element left, reset pointers
+        if (front == rear) {
+            front = -1;
+            rear = -1;
+        } else {
+            // Circularly increment the front pointer
+            front = (front + 1) % size;
+        }
+
+        return removedValue;
+    }
+
+    // Display all current elements in the queue
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty." << endl;
+            return;
+        }
+
+        cout << "Queue elements: ";
+        int i = front;
+        while (true) {
+            cout << arr[i] << " ";
+            if (i == rear) break;
+            i = (i + 1) % size; // Move circularly
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    // Create a circular queue that can hold up to 5 elements
+    CircularQueue q(5);
+
+    q.enqueue(10);
+    q.enqueue(20);
+    q.enqueue(30);
+    q.enqueue(40);
+    q.enqueue(50);
+    q.display();
+
+    // This will cause an overflow error
+    q.enqueue(60); 
+
+    cout << "Deleted element: " << q.dequeue() << endl;
+    cout << "Deleted element: " << q.dequeue() << endl;
+    q.display();
+
+    // Insert elements again to demonstrate the circular feature
+    q.enqueue(60);
+    q.enqueue(70);
+    q.display();
+
+    return 0;
+}
