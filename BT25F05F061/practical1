@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <ctype.h> // Needed for isdigit()
+
+#define MAX 100
+
+// Stack definition
+int stack[MAX];
+int top = -1;
+
+// Push function to add an item to the stack
+void push(int value) {
+    if (top >= MAX - 1) {
+        printf("Stack Overflow\n");
+        return;
+    }
+    stack[++top] = value;
+}
+
+// Pop function to remove and return the top item from the stack
+int pop() {
+    if (top < 0) {
+        printf("Stack Underflow\n");
+        return -1;
+    }
+    return stack[top--];
+}
+
+// Function to evaluate the postfix expression
+int evaluatePostfix(char* exp) {
+    for (int i = 0; exp[i] != '\0'; i++) {
+        // If the character is a space, skip it
+        if (exp[i] == ' ') {
+            continue;
+        }
+
+        // If the character is a number, push it to the stack
+        if (isdigit(exp[i])) {
+            push(exp[i] - '0'); // Convert char character to int integer
+        } 
+        // If the character is an operator, pop two numbers and calculate
+        else {
+            int val2 = pop(); // Top element is the second operand
+            int val1 = pop(); // Next element is the first operand
+
+            switch (exp[i]) {
+                case '+': push(val1 + val2); break;
+                case '-': push(val1 - val2); break;
+                case '*': push(val1 * val2); break;
+                case '/': push(val1 / val2); break;
+            }
+        }
+    }
+    return pop(); // The final result remains at the top
+}
+
+int main() {
+    // Example expression: "5 3 + 8 2 / *" -> equivalent to (5 + 3) * (8 / 2)
+    char exp[] = "53+82/*"; 
+    
+    printf("Postfix Expression: %s\n", exp);
+    printf("Evaluation Result: %d\n", evaluatePostfix(exp));
+    
+    return 0;
+}
