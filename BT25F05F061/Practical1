@@ -1,0 +1,71 @@
+#include <iostream>
+#include <stack>
+#include <string>
+#include <cctype>
+#include <cmath>
+
+using namespace std;
+
+// Function to check if a character is an operator
+bool isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+
+// Function to perform the arithmetic operation
+int performOperation(char op, int operand1, int operand2) {
+    switch (op) {
+        case '+': return operand1 + operand2;
+        case '-': return operand1 - operand2;
+        case '*': return operand1 * operand2;
+        case '/': 
+            if (operand2 == 0) {
+                cerr << "Error: Division by zero!" << endl;
+                exit(1);
+            }
+            return operand1 / operand2;
+        case '^': return pow(operand1, operand2);
+        default: return 0;
+    }
+}
+
+// Function to evaluate the postfix expression
+int evaluatePostfix(string exp) {
+    stack<int> s;
+
+    for (int i = 0; i < exp.length(); i++) {
+        // Skip spaces if the string has any
+        if (exp[i] == ' ') {
+            continue;
+        }
+
+        // If character is an operand (digit), push it to the stack
+        if (isdigit(exp[i])) {
+            s.push(exp[i] - '0'); // Convert char to int
+        }
+        // If character is an operator
+        else if (isOperator(exp[i])) {
+            // Pop the top two elements
+            int operand2 = s.top();
+            s.pop();
+            int operand1 = s.top();
+            s.pop();
+
+            // Perform operation and push the result back
+            int result = performOperation(exp[i], operand1, operand2);
+            s.push(result);
+        }
+    }
+
+    // The final remaining element in the stack is the result
+    return s.top();
+}
+
+int main() {
+    // Example: "231*+9-" means 2 + (3 * 1) - 9 = -4
+    string expression = "231*+9-"; 
+    
+    cout << "Postfix Expression: " << expression << endl;
+    cout << "Evaluation Result: " << evaluatePostfix(expression) << endl;
+
+    return 0;
+}
